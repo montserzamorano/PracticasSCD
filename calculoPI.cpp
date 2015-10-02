@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <pthread.h>
+#include "fun_tiempo.h"
 
 using namespace std ;
 
@@ -116,16 +117,38 @@ int main()
 
    cout << "Cálculo de PI" << endl ;
    double pi_sec = 0.0, pi_conc_ent = 0.0, pi_conc_cont=0.0 ;
+   double tiempo_secuencial=0, tiempo_entrelazada=0, tiempo_contigua=0 ;
 
+
+   struct timespec inicio, fin ;
+
+   inicio = ahora() ;
    pi_sec  = calcular_integral_secuencial() ;
-   pi_conc_ent = calcular_integral_concurrente_entrelazada() ;
-   pi_conc_cont = calcular_integral_concurrente_contigua() ;
+   fin = ahora() ;
+   tiempo_secuencial = duracion(&inicio, &fin);
 
+   inicio = ahora() ;
+   pi_conc_ent = calcular_integral_concurrente_entrelazada() ;
+   fin = ahora() ;
+   tiempo_entrelazada = duracion(&inicio, &fin) ;
+
+   inicio = ahora() ;
+   pi_conc_cont = calcular_integral_concurrente_contigua() ;
+   fin = ahora() ;
+   tiempo_contigua = duracion(&inicio, &fin) ;
+
+   cout << "APROXIMACIÓN DE PI" << endl;
    cout << "valor de PI (calculado secuencialmente)  == " << pi_sec  << endl
         << "valor de PI (calculado de forma entrelazada) == " << pi_conc_ent
         << endl
         << "valor de PI (calculado de forma contigua) ==" << pi_conc_cont
         << endl;
+
+   cout << "TIEMPOS" << endl;
+   cout << "tiempo cálculo secuencial == " << tiempo_secuencial << endl
+        << "tiempo cálculo entrelazada == " << tiempo_entrelazada << endl
+        << "tiempo cálculo contigua == " << tiempo_contigua << endl;
+      
 
    return 0 ;
 }
