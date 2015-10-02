@@ -114,7 +114,7 @@ double calcular_integral_concurrente_entrelazada(){
 int main()
 {
 
-   cout << "Ejemplo 4 (cálculo de PI)" << endl ;
+   cout << "Cálculo de PI" << endl ;
    double pi_sec = 0.0, pi_conc_ent = 0.0, pi_conc_cont=0.0 ;
 
    pi_sec  = calcular_integral_secuencial() ;
