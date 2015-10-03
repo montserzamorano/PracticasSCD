@@ -1,7 +1,7 @@
-# practicasSCD
+PRÁCTICAS SCD
 
-Ejercicio cálculo concurrente pi
-calculopi.cpp
-fun_tiempo.h
-fun_tiempo.c
-makefile
+1)Ejercicio cálculo concurrente pi
+  calculopi.cpp
+  fun_tiempo.h
+  fun_tiempo.c
+  makefile
