@@ -13,7 +13,7 @@ extern "C" {
 
 struct timespec ahora() ;
 
-//----------------------------------------------------------------------
+//---------------------------------------------------------------------
 // devuelve la duración en segundos del intervalo de tiempo real transcurrido 
 // entre 'inicio' y 'fin'
 
