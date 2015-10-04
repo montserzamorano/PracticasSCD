@@ -1,8 +1,8 @@
 // *********************************************************************
 // SCD. Ejemplos del seminario 1.
 //
-// Ejercicio cálculo PI
-// Montserrat Rodríguez Zamorano
+// Ejercicio calculo PI
+// Montserrat Rodriguez Zamorano
 // *********************************************************************
 
 #include <iostream>
@@ -14,8 +14,8 @@ using namespace std ;
 // ---------------------------------------------------------------------
 // constante y variables globales (compartidas entre hebras)
 
-const unsigned long m = long(1024)*long(1024) ;  // número de muestras
-const unsigned n      = 4 ;                      // número de hebras
+const unsigned long m = long(1024)*long(1024) ;  // numero de muestras
+const unsigned n      = 4 ;                      // numero de hebras
 
 double resultado_parcial[n] ; // tabla de sumas parciales (una por hebra)
 
@@ -42,10 +42,10 @@ double calcular_integral_secuencial( )
 
 void * funcion_hebra_contigua( void * ih_void )
 {
-   unsigned long ih = (unsigned long) ih_void ; // número o índice de esta hebra
+   unsigned long ih = (unsigned long) ih_void ; // numero o indice de esta hebra
    double sumap = 0.0 ;
    // calcular suma parcial en "sumap"
-   for(unsigned long i=ih; i<m/n ; i+=1) {
+   for(unsigned long i=ih*m/n; i<(ih+1)*m/n ; i++) {
      sumap += f((i+0.5)/m );
    }
    resultado_parcial[ih] = sumap ; // guardar suma parcial en vector.
@@ -54,7 +54,7 @@ void * funcion_hebra_contigua( void * ih_void )
 
 void * funcion_hebra_entrelazada( void * ih_void )
 {
-   unsigned long ih = (unsigned long) ih_void ; // número o índice de esta hebra
+   unsigned long ih = (unsigned long) ih_void ; // numero o indice de esta hebra
    double sumap = 0.0 ;
    // calcular suma parcial en "sumap"
    for(unsigned long i=ih; i<m ; i+=n) {
@@ -112,43 +112,50 @@ double calcular_integral_concurrente_entrelazada(){
 
 // ---------------------------------------------------------------------
 
-int main()
+int main( int argc , char *argv[])
 {
-
-   cout << "Cálculo de PI" << endl ;
+   cout << endl << "Ejemplo 4 : Cálculo de PI" << endl ;
+   cout << "Número de hebras: " << n << endl ;
    double pi_sec = 0.0, pi_conc_ent = 0.0, pi_conc_cont=0.0 ;
    double tiempo_secuencial=0, tiempo_entrelazada=0, tiempo_contigua=0 ;
-
+   int num_rep = 100;
 
    struct timespec inicio, fin ;
 
-   inicio = ahora() ;
-   pi_sec  = calcular_integral_secuencial() ;
-   fin = ahora() ;
-   tiempo_secuencial = duracion(&inicio, &fin);
+   for (unsigned i=0 ; i < num_rep ; i++ )
+   {
+     inicio = ahora() ;
+     pi_sec  = calcular_integral_secuencial() ;
+     fin = ahora() ;
+     tiempo_secuencial += duracion(&inicio, &fin);
 
-   inicio = ahora() ;
-   pi_conc_ent = calcular_integral_concurrente_entrelazada() ;
-   fin = ahora() ;
-   tiempo_entrelazada = duracion(&inicio, &fin) ;
+     inicio = ahora() ;
+     pi_conc_ent = calcular_integral_concurrente_entrelazada() ;
+     fin = ahora() ;
+     tiempo_entrelazada += duracion(&inicio, &fin) ;
 
-   inicio = ahora() ;
-   pi_conc_cont = calcular_integral_concurrente_contigua() ;
-   fin = ahora() ;
-   tiempo_contigua = duracion(&inicio, &fin) ;
+     inicio = ahora() ;
+     pi_conc_cont = calcular_integral_concurrente_contigua() ;
+     fin = ahora() ;
+     tiempo_contigua += duracion(&inicio, &fin) ;
+    }
 
-   cout << "APROXIMACIÓN DE PI" << endl;
+   tiempo_secuencial = tiempo_secuencial/num_rep ;
+   tiempo_entrelazada = tiempo_entrelazada/num_rep ;
+   tiempo_contigua = tiempo_contigua/num_rep ;
+
+   cout << endl << "1.Aproximación de PI" << endl;
    cout << "valor de PI (calculado secuencialmente)  == " << pi_sec  << endl
         << "valor de PI (calculado de forma entrelazada) == " << pi_conc_ent
         << endl
         << "valor de PI (calculado de forma contigua) ==" << pi_conc_cont
-        << endl;
+        << endl << endl ;
 
-   cout << "TIEMPOS" << endl;
+   cout << "2.Tiempos de ejecución" << endl;
    cout << "tiempo cálculo secuencial == " << tiempo_secuencial << endl
         << "tiempo cálculo entrelazada == " << tiempo_entrelazada << endl
-        << "tiempo cálculo contigua == " << tiempo_contigua << endl;
-      
+        << "tiempo cálculo contigua == " << tiempo_contigua << endl << endl ;
+
 
    return 0 ;
 }
