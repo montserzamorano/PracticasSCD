@@ -19,7 +19,7 @@ const unsigned
   tam_vector = 10 ;
 
 int buffer [tam_vector] ; //buffer de escritura
-unsigned escritos = 0 ;
+unsigned primera_libre = 0 ;
 
 sem_t
   mutex ,
@@ -51,9 +51,9 @@ void * productor( void * )
   {
     int dato = producir_dato() ;
     sem_wait(&puede_escribir) ;
-      if(escritos < tam_vector) { // si se puede escribir en el buffer, producir
-        buffer[escritos] = dato ;
-        escritos++ ;
+      if(primera_libre < tam_vector) { // si se puede escribir en el buffer, producir
+        buffer[primera_libre] = dato ;
+        primera_libre++ ;
       }
     sem_post(&puede_leer) ;
   }
@@ -67,9 +67,9 @@ void * consumidor( void * )
   {
     sem_wait(&puede_leer) ;
       int dato ;
-      if( escritos >= 0) { // si hay algo en el buffer, consumir
-        dato = buffer[escritos-1];
-        escritos-- ;
+      if( primera_libre >= 0) { // si hay algo en el buffer, consumir
+        dato = buffer[primera_libre-1];
+        primera_libre-- ;
       }
     sem_post(&puede_escribir) ;
     consumir_dato(dato) ;
@@ -93,6 +93,9 @@ int main()
   //Esperar a que las hebras terminen
   pthread_join( productora, NULL ) ;
   pthread_join( consumidora, NULL ) ;
+
+  //Escribir "fin" cuando hayan acabado las dos hebras
+  cout << "fin" << endl ;
 
   //Destruir los semáforos
   sem_destroy( &puede_leer ) ;
