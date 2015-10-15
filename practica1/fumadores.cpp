@@ -24,7 +24,7 @@ pair <int, string> ingredientes[num_fumadores];
 // ------------------------------Semáforos--------------------------------------
 sem_t
   puede_suministrar ,
-  puede_fumar[3] ,
+  puede_fumar[num_fumadores] ,
   mutex ;
 // ------------------------------Funciones--------------------------------------
 // función que simula la acción de fumar  como un retardo aleatorio de la hebra
@@ -87,6 +87,7 @@ void * fumador(void * ih_void) {
       << " ha terminado de fumar." << endl ;
     sem_post ( &mutex) ;
   }
+	return NULL;
 }
 // ----------------------------------------------------------------------------
 //función "productor"
@@ -97,6 +98,7 @@ void * estanquero(void *) {
       sobre_el_mostrador = suministrar() ;
     sem_post( &puede_fumar[sobre_el_mostrador]) ;
   }
+  return NULL ;
 }
 // ----------------------------------------------------------------------------
 
