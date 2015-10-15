@@ -11,8 +11,8 @@ libs:=
 msg:
 	@echo "usa 'make pcFIFO' para compilar y ejecutar el programa de los productores - consumidores usando una cola FIFO."
 	@echo "usa 'make pcLIFO' para compilar y ejecutar el programa de los productores - consumidores usando una cola LIFO."
-   @echo "usa 'make pcFIFOmultiple' para compilar y ejecutar el programa de los productores - consumidores usando una cola FIFO (múltiple)."
-   @echo "usa 'make pcLIFOmultiple' para compilar y ejecutar el programa de los productores - consumidores usando una cola LIFO (múltiple)."
+   	@echo "usa 'make pcFIFOmultiple' para compilar y ejecutar el programa de los productores - consumidores usando una cola FIFO (múltiple)."
+   	@echo "usa 'make pcLIFOmultiple' para compilar y ejecutar el programa de los productores - consumidores usando una cola LIFO (múltiple)."
 	@echo "usa 'make fu' para compilar y ejecutar el programa de los fumadores y el estanquero."
 	@echo "usa 'make clean' para borrar todos los archivos creados al compilar."
 	@echo "usa 'make todo' para recompilar (si es necesario) los dos programas."
