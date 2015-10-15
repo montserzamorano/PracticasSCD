@@ -1,7 +1,7 @@
 // *********************************************************************
 // SCD. Práctica 1.
 //
-// Ejercicio productor-consumidor (LIFO) múltiple
+// Ejercicio productor-consumidor (LIFO)
 // Montserrat Rodriguez Zamorano
 // *********************************************************************
 
@@ -64,8 +64,8 @@ void * productor( void * )
 {
   for( unsigned i = 0 ; i < num_items_p ; i++ )
   {
-    sem_wait(&mutex_productores);
     int dato = producir_dato() ;
+    sem_wait(&mutex_productores);
     sem_wait(&puede_escribir) ;
       if(primera_libre < tam_vector) { // si se puede escribir en el buffer, producir
         buffer[primera_libre] = dato ;
