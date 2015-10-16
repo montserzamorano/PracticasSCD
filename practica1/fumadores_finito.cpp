@@ -1,7 +1,7 @@
 // *********************************************************************
 // SCD. Práctica 1.
 //
-// Problema de los fumadores (tiempo finito).
+// Problema de los fumadores.
 // Montserrat Rodriguez Zamorano
 // *********************************************************************
 
@@ -18,11 +18,12 @@ using namespace std ;
 
 // -------------------Variables constantes y globales---------------------------
 const unsigned num_fumadores = 3 ;
-static int contador_estanco = 0;
-const unsigned limite_cigarrillos = 10 ;
 unsigned long sobre_el_mostrador = -1; //variable compartida que representa el ingrediente
 //ingredientes y fumador al que le falta
 pair <int, string> ingredientes[num_fumadores];
+const unsigned limite_estanco = 10 ;
+static unsigned contador_estanco = 0 ;
+pthread_t fumadores[num_fumadores], estanco ; //se declaran aqui para poder hacer pthread_exit
 // ------------------------------Semáforos--------------------------------------
 sem_t
   puede_suministrar ,
@@ -60,7 +61,6 @@ int suministrar() {
   unsigned ing = rand() % 3 ;
 
   sem_wait( &mutex) ;
-    contador_estanco++;
     cout << "El estanquero coloca en el mostrador " << ingredientes[ing].second
     << "." << endl ;
   sem_post( &mutex) ;
@@ -71,7 +71,7 @@ int suministrar() {
 
 void * fumador(void * ih_void) {
   unsigned long ih = (unsigned long) ih_void ;
-  while(contador_estanco < limite_cigarrillos) {
+  while(contador_estanco < limite_estanco) {
     ///////////recoger/////////
     sem_wait ( &puede_fumar[ih]) ;
     sem_wait( &mutex) ;
@@ -90,31 +90,32 @@ void * fumador(void * ih_void) {
       << " ha terminado de fumar." << endl ;
     sem_post ( &mutex) ;
   }
-
-    for(unsigned i = 0 ; i < num_fumadores ; i++)
-       sem_post( &puede_fumar[ih]) ;
-
+  sem_wait( &mutex) ;
+    cout << "El fumador " << ingredientes[ih].first
+    << " recoge el último ingrediente y se va a su casa." << endl ;
+  sem_post ( &mutex) ;
+  pthread_exit( &estanco) ;
 	return NULL;
 }
 // ----------------------------------------------------------------------------
 //función "productor"
 
 void * estanquero(void *) {
-  bool puede = true ;
-  while(puede) {
+  while(contador_estanco < limite_estanco) {
     sem_wait( &puede_suministrar) ;
       sobre_el_mostrador = suministrar() ;
+      contador_estanco++;
     sem_post( &puede_fumar[sobre_el_mostrador]) ;
-    if(contador_estanco = limite_cigarrillos - 1){
-      puede = false ;
-      sobre_el_mostrador = -1 ;
-    }
   }
-   
   sem_wait( &mutex) ;
-  cout << "Cierro el estanco." << endl ;
-  sem_post( &mutex) ;
-
+    cout << "El estanquero coloca sobre el mostrador todos los ingredientes." << endl ;
+  sem_post ( &mutex) ;
+  for(unsigned i = 0; i < num_fumadores; i++) {
+    sem_post( &puede_fumar[i]) ;
+  }
+  sem_wait( &mutex) ;
+    cout << "El estanquero cierra el estanco." << endl ;
+  sem_post ( &mutex) ;
   return NULL ;
 }
 // ----------------------------------------------------------------------------
@@ -135,7 +136,6 @@ int main()
   sem_init( &mutex, 0, 1) ;
 
   //crear las hebras
-  pthread_t fumadores[num_fumadores], estanco ;
   pthread_create( &estanco, NULL, estanquero, NULL) ;
   for( unsigned i = 0 ; i < num_fumadores ; i++ ) {
     void * arg_ptr = (void *) i ; //convertir entero a puntero
@@ -147,6 +147,10 @@ int main()
   for( unsigned i = 0 ; i < num_fumadores ; i++ ) {
     pthread_join( fumadores[i] , NULL ) ;
   }
+
+  sem_wait( &mutex) ;
+    cout << "Hasta mañana." << endl ;
+  sem_post ( &mutex) ;
 
   //destruir los semáforos
   sem_destroy( &puede_suministrar) ;
