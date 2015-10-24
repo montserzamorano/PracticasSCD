@@ -76,7 +76,7 @@ void * productor( void * )
         }
       }
     sem_post(&puede_leer) ;
-    sem_post(&mutex_consumidores) ;
+    sem_post(&mutex_productores) ;
   }
   return NULL ;
 }
@@ -98,7 +98,7 @@ void * consumidor( void * )
         }
       }
     sem_post(&puede_escribir) ;
-    sem_post(&mutex_productores) ;
+    sem_post(&mutex_consumidores) ;
     consumir_dato(dato) ;
   }
   return NULL ;
