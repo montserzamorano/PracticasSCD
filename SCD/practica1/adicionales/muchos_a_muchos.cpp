@@ -54,6 +54,7 @@ int desbloquea[num_fumadores] ;
 sem_t
   puede_suministrar[num_estanqueros] ,
   puede_fumar[num_fumadores] ,
+  mutex2,
   mutex ;
 // ------------------------------Funciones--------------------------------------
 void inicializarColaPrioridad(){
@@ -162,10 +163,10 @@ void * estanquero(void * ih_void) {
   while(true) {
     sem_wait( &puede_suministrar[ih]) ;
       sobre_el_mostrador[ih] = suministrar(ih) ;
-      sem_wait(&mutex); //evitar que modifiquen al mismo tiempo el vector
+      sem_wait(&mutex2); //evitar que modifiquen al mismo tiempo el vector
       maxima_prioridad = buscarPrioridad(sobre_el_mostrador[ih]) ;
       desbloquea[maxima_prioridad] = ih ;
-      sem_post(&mutex);
+      sem_post(&mutex2);
     sem_post( &puede_fumar[maxima_prioridad]) ;
   }
 
@@ -203,6 +204,7 @@ int main()
     sem_init( &puede_fumar[i], 0, 0) ;
   }
   sem_init( &mutex, 0, 1) ;
+  sem_init( &mutex2, 0, 1);
 
   //crear las hebras
   pthread_t estanco[num_estanqueros], fumadores[num_fumadores] ;
@@ -230,6 +232,7 @@ int main()
 
   //destruir los semáforos
   sem_destroy( &mutex) ;
+  sem_destroy( &mutex2) ;
   for( unsigned i = 0 ; i < num_fumadores ; i++ ) {
     sem_destroy( &puede_fumar[i]) ;
   }
