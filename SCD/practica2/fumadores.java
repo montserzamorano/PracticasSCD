@@ -22,6 +22,7 @@ System.out.println(ANSI_RED + "This text is red!" + ANSI_RESET);
 ******************************************************************************/
 
 import monitor.*;
+import java.util.Random;
 
 //monitor estanco
 ///////////////////// CLASE ESTANCO /////////////////////////////////////////
@@ -82,6 +83,21 @@ class Estanco extends AbstractMonitor{
 }
 ////////////////////////////FIN CLASE ESTANCO/////////////////////////////////
 
+////////////////////////////CLASE AUX/////////////////////////////////////////
+
+/*class aux{
+  static Random genAlea = new Random();
+  static void dormir_max(int milisecsMax){
+    try{
+      Thread.sleep(genAlea.nextInt(milisecsMax));
+    }catch(InterruptedException e){
+      System.err.println("Sleep interrumpido.");
+    }
+  }
+}*/
+
+///////////////////////////FIN CLASE AUX//////////////////////////////////////
+
 ////////////////////////////CLASE FUMADOR/////////////////////////////////////
 
 //hebra fumador
@@ -93,7 +109,7 @@ class Fumador implements Runnable {
   public Fumador(Estanco estanco, int p_miIngrediente){
     miIngrediente = p_miIngrediente;
     this.estanco = estanco;
-    thr = new Thread(this,"Fumador" + (p_miIngrediente+1));
+    thr = new Thread(this,"Fumador " + (p_miIngrediente+1));
   } //Faltan parámetros
   public void run(){
     System.out.println("\u001B[36m" +
@@ -101,9 +117,11 @@ class Fumador implements Runnable {
     while(true)
     {
       estanco.obtenerIngrediente(miIngrediente); //coger el ingrediente
-      //aux.dormir_max(2000);
       try{
+        //aux.dormir_max(2000);
         Thread.sleep(2000);
+        System.out.println("\u001B[36m" +
+        thr.getName() + " termina de fumar." + "\u001B[0m");
       }
       catch(InterruptedException e){
         System.err.println("Fumador interrumpido");
@@ -145,14 +163,9 @@ class MainFumadores
   {
     int num_fumadores = 3;
     Estanco estanco = new Estanco();
-    Estanquero e = new Estanquero(estanco);
     Fumador[] f = new Fumador[num_fumadores];
-    for(int i= 0; i < num_fumadores; i++){
-      f[i] = new Fumador(estanco,i);
-    }
-
 	  // crear hebras
-    e = new Estanquero(estanco) ;
+    Estanquero e = new Estanquero(estanco) ;
 
 	  for(int i = 0; i < f.length; i++){
 	    f[i] = new Fumador(estanco,i);
